@@ -1,0 +1,88 @@
+name: Android CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build, Unit Tests & Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Prepare debug keystore & env placeholder
+        shell: bash
+        run: |
+          if [ -f debug.keystore.base64 ]; then
+            base64 --decode debug.keystore.base64 > debug.keystore
+          else
+            keytool -genkeypair -v -keystore debug.keystore -storepass android \
+              -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
+              -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          fi
+          if [ ! -f .env ] && [ -f .env.example ]; then
+            cp .env.example .env
+          fi
+
+      - name: Set up Gradle 9.3.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.3.1"
+
+      - name: Run JVM & Robolectric unit tests
+        run: gradle :app:testDebugUnitTest --stacktrace
+
+      - name: Run Android Lint
+        run: gradle :app:lintDebug --stacktrace
+
+      - name: Assemble Debug APK
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Upload Debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eq-math-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14
+
+      - name: Upload Test & Lint Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-reports
+          path: |
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/lint-results-debug.html
+          retention-days: 14
+
+  firebase-config-check:
+    name: Validate Firebase Blueprint & Rules
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate JSON blueprints & Firestore rules presence
+        run: |
+          python3 -m json.tool firebase-blueprint.json > /dev/null
+          python3 -m json.tool firebase.json > /dev/null
+          python3 -m json.tool .github/repo-metadata.json > /dev/null
+          test -s firestore.rules
+          echo "All Firebase configuration and metadata files are valid."

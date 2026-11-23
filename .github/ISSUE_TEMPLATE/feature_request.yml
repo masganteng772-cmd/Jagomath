@@ -1,0 +1,31 @@
+name: Feature Request
+description: Suggest a new learning mode, badge, or improvement for EQ-Math
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature Summary
+      description: What would you like to add or improve in EQ-Math?
+      placeholder: Describe the feature and how it helps students learn...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Feature Area
+      options:
+        - Quiz Gameplay & Visual Hints
+        - Gamification (Levels, Stars, Badges)
+        - Accessibility & Indonesian Localization
+        - Firebase Sync & Profile
+        - UI/UX & Adaptive Tablet Layout
+        - CI/CD & Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Proposed Solution / Mockups
+      description: Share any ideas, flows, or references.

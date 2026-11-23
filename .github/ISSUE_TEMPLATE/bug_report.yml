@@ -1,0 +1,57 @@
+name: Bug Report
+description: Report an unexpected bug or crash in EQ-Math
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue! Please fill in the details below so we can reproduce and fix it quickly.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Clear and concise summary of the bug.
+      placeholder: Describe what went wrong...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Exact steps to trigger the issue.
+      placeholder: |
+        1. Open EQ-Math in Guest Mode
+        2. Tap 'Misi Harian'
+        3. Answer question #4...
+    validations:
+      required: true
+  - type: dropdown
+    id: screen
+    attributes:
+      label: Affected Screen
+      options:
+        - Auth / Google Sign-In
+        - Beranda (Home Dashboard)
+        - Arena Latihan (Practice Hub)
+        - Kuis (Quiz Screen)
+        - Hasil Kuis (Quiz Result)
+        - Koleksi Lencana (Achievements)
+        - Progres & Peta Penguasaan
+        - Tabel Pintar SD (Table Guide)
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device & Android Version
+      placeholder: e.g., Pixel 8 — Android 15 (API 35)
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or Screenshots
+      description: Paste any Logcat output or attach screenshots/recordings.
+      render: shell

@@ -1,0 +1,39 @@
+name: Sync Repository Metadata
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/repo-metadata.json"
+  workflow_dispatch:
+
+jobs:
+  sync-metadata:
+    name: Sync Description, Homepage & Topics
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Apply GitHub repository description, homepage & topics
+        env:
+          GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY##*/}"
+          PAGES_URL="https://${OWNER}.github.io/${REPO}/"
+          DESCRIPTION="$(python3 -c "import json; print(json.load(open('.github/repo-metadata.json'))['description'])")"
+          TOPICS_JSON="$(python3 -c "import json; print(json.dumps({'names': json.load(open('.github/repo-metadata.json'))['topics']}))")"
+
+          if [ -z "${{ secrets.GH_ADMIN_TOKEN }}" ]; then
+            echo "::notice::GH_ADMIN_TOKEN secret is not set. Run ./scripts/setup-github-repo.sh locally with gh CLI, or add a PAT with repo scope as GH_ADMIN_TOKEN."
+          fi
+
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}" \
+            -f description="${DESCRIPTION}" \
+            -f homepage="${PAGES_URL}" || echo "::warning::Could not update description/homepage with current token permissions."
+
+          printf '%s' "${TOPICS_JSON}" | gh api --method PUT \
+            -H "Accept: application/vnd.github+json" \
+            "repos/${GITHUB_REPOSITORY}/topics" \
+            --input - || echo "::warning::Could not update topics with current token permissions."

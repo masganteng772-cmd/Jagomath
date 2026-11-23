@@ -1,0 +1,29 @@
+{
+  "name": "EQ-Math",
+  "description": "EQ-Math — Belajar Jadi Mudah! Gamified Android multiplication & division quiz app for Indonesian elementary students (SD), built with Kotlin, Jetpack Compose, Material 3, and Firebase.",
+  "homepage": "",
+  "topics": [
+    "android",
+    "kotlin",
+    "jetpack-compose",
+    "material-design-3",
+    "math-game",
+    "education",
+    "edtech",
+    "indonesia",
+    "elementary-math",
+    "multiplication",
+    "division",
+    "gamification",
+    "firebase",
+    "firestore",
+    "credential-manager",
+    "mvvm",
+    "robolectric",
+    "wcag",
+    "android-app",
+    "eq-math"
+  ],
+  "default_release_tag": "v1.0.0",
+  "license": "MIT"
+}

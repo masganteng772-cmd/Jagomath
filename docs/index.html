@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EQ-Math — Belajar Jadi Mudah! Aplikasi permainan kuis perkalian dan pembagian interaktif untuk anak SD dengan Jetpack Compose, Material 3, dan Firebase." />
+  <title>EQ-Math — Belajar Jadi Mudah! | Android Math Game</title>
+  <link rel="icon" type="image/jpeg" href="assets/app-icon.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 4-Quadrant EQ-Math Brand Top Stripe -->
+  <div class="quadrant-stripe" aria-hidden="true">
+    <span class="q-yellow"></span>
+    <span class="q-red"></span>
+    <span class="q-green"></span>
+    <span class="q-blue"></span>
+  </div>
+
+  <!-- Navigation Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="brand-link" aria-label="EQ-Math Beranda">
+        <span class="logo-plate">
+          <img src="assets/logo.png" alt="EQ-Math" height="28" />
+        </span>
+      </a>
+
+      <nav class="nav-links" aria-label="Navigasi utama">
+        <a href="#showcase">Showcase</a>
+        <a href="#demo">Coba Kuis</a>
+        <a href="#features">Fitur</a>
+        <a href="#gamification">Gamifikasi</a>
+        <a href="#architecture">Arsitektur</a>
+      </nav>
+
+      <div class="header-actions">
+        <button id="themeToggle" class="icon-btn" type="button" aria-label="Ubah tema terang atau gelap" title="Toggle Dark/Light Mode">
+          <span class="theme-icon" aria-hidden="true">🌙</span>
+        </button>
+        <a id="repoLinkTop" href="https://github.com/" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">
+          GitHub Repo
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow-pill">
+            <span class="dot-quad"></span>
+            <span>Kotlin · Jetpack Compose · Material 3 · Firebase</span>
+          </div>
+          <h1>Belajar Matematika <span class="accent-text">Jadi Mudah &amp; Seru!</span></h1>
+          <p class="hero-subtitle">
+            <strong>EQ-Math</strong> adalah aplikasi kuis perkalian (<code>×</code>) dan pembagian (<code>÷</code>)
+            interaktif berbahasa Indonesia untuk siswa SD. Dilengkapi <em>Bantuan Visual</em>, sistem level,
+            target bintang, 12 lencana prestasi, dan sinkronisasi cloud Firebase.
+          </p>
+
+          <div class="hero-cta">
+            <a id="releaseLinkHero" href="#showcase" class="btn btn-primary btn-lg">
+              Lihat Showcase 2×2
+            </a>
+            <a href="#demo" class="btn btn-outline btn-lg">
+              Coba Kuis Mini →
+            </a>
+          </div>
+
+          <div class="hero-stats" role="list" aria-label="Statistik fitur EQ-Math">
+            <div class="stat-pill" role="listitem">
+              <strong>1 – 12</strong>
+              <span>Tabel Perkalian &amp; Pembagian</span>
+            </div>
+            <div class="stat-pill" role="listitem">
+              <strong>12 Lencana</strong>
+              <span>&amp; 5 Target Bintang</span>
+            </div>
+            <div class="stat-pill" role="listitem">
+              <strong>WCAG AA+</strong>
+              <span>Light &amp; Dark Theme</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Visual: Live Featured GIF Card -->
+        <div class="hero-visual">
+          <div class="hero-device-card">
+            <img src="assets/showcase/02-quiz-gameplay.gif" alt="Demo Kuis Interaktif EQ-Math 60fps" loading="eager" />
+            <div class="floating-badge badge-top">
+              <span>🔥</span> Kombo x4 · +285 XP
+            </div>
+            <div class="floating-badge badge-bottom">
+              <span>★</span> Bantuan Visual Interaktif
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2x2 Animated Showcase Section -->
+    <section id="showcase" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">60Hz Smooth Showcase</span>
+          <h2>Jelajahi Pengalaman Bermain EQ-Math (2×2)</h2>
+          <p>Klik kartu mana pun untuk memperbesar pratinjau animasi layar Android Material 3.</p>
+        </div>
+
+        <div class="showcase-grid">
+          <article class="showcase-card" data-gif="assets/showcase/01-home-dashboard.gif" data-title="1. Beranda &amp; Papan Hadiah">
+            <div class="showcase-media">
+              <img src="assets/showcase/01-home-dashboard.gif" alt="Beranda EQ-Math, Progres Level XP, Papan Hadiah Bintang, dan Misi Harian" loading="lazy" />
+            </div>
+            <div class="showcase-body">
+              <span class="chip chip-yellow">Beranda</span>
+              <h3>Beranda &amp; Papan Hadiah</h3>
+              <p>Pantau level XP, rekor belajar harian, progres target Bintang Emas, dan langsung mulai <strong>Misi Harian (+30 Bonus XP)</strong>.</p>
+            </div>
+          </article>
+
+          <article class="showcase-card" data-gif="assets/showcase/02-quiz-gameplay.gif" data-title="2. Kuis Interaktif &amp; Bantuan Visual">
+            <div class="showcase-media">
+              <img src="assets/showcase/02-quiz-gameplay.gif" alt="Kuis Interaktif EQ-Math dengan Bantuan Visual Kelompok Titik dan Kombo" loading="lazy" />
+            </div>
+            <div class="showcase-body">
+              <span class="chip chip-red">Kuis Aktif</span>
+              <h3>Kuis Interaktif &amp; Bantuan Visual</h3>
+              <p>Buka diagram kelompok titik untuk memahami konsep perkalian &amp; pembagian, kejar <strong>Kombo</strong>, atau ganti mode <em>Ketik Angka</em>.</p>
+            </div>
+          </article>
+
+          <article class="showcase-card" data-gif="assets/showcase/03-rewards-celebration.gif" data-title="3. Hasil Kuis, Bintang &amp; Lencana">
+            <div class="showcase-media">
+              <img src="assets/showcase/03-rewards-celebration.gif" alt="Layar Perayaan Hasil Kuis EQ-Math dengan Piala, 3 Bintang, Naik Level, dan Lencana Baru" loading="lazy" />
+            </div>
+            <div class="showcase-body">
+              <span class="chip chip-green">Perayaan</span>
+              <h3>Hasil Kuis, Bintang &amp; Lencana</h3>
+              <p>Rayakan akurasi tinggi dengan piala emas, animasi 3 bintang, notifikasi naik level, dan lencana prestasi baru.</p>
+            </div>
+          </article>
+
+          <article class="showcase-card" data-gif="assets/showcase/04-table-guide-mastery.gif" data-title="4. Tabel Pintar SD &amp; Peta Penguasaan">
+            <div class="showcase-media">
+              <img src="assets/showcase/04-table-guide-mastery.gif" alt="Tabel Pintar SD 1-12 dan Peta Penguasaan Tabel 3 Bintang" loading="lazy" />
+            </div>
+            <div class="showcase-body">
+              <span class="chip chip-blue">Referensi</span>
+              <h3>Tabel Pintar SD &amp; Peta Penguasaan</h3>
+              <p>Pelajari tabel 1–12 secara terstruktur, pantau peta penguasaan 3 bintang, dan klik satu tombol untuk langsung berlatih.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Browser Mini-Quiz Demo -->
+    <section id="demo" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Coba Langsung di Browser</span>
+          <h2>Mini-Kuis Interaktif EQ-Math</h2>
+          <p>Rasakan langsung mekanisme kuis, <strong>Bantuan Visual</strong>, dan penghitung <strong>Kombo</strong> sebelum memasang APK Android.</p>
+        </div>
+
+        <div class="demo-card">
+          <div class="quadrant-stripe mini-stripe" aria-hidden="true">
+            <span class="q-yellow"></span>
+            <span class="q-red"></span>
+            <span class="q-green"></span>
+            <span class="q-blue"></span>
+          </div>
+
+          <div class="demo-hud">
+            <div class="demo-pill" id="demoCombo">🔥 Kombo x0</div>
+            <div class="demo-op-switch" role="group" aria-label="Pilih operasi mini kuis">
+              <button type="button" class="op-tab active" data-op="MUL">Perkalian (×)</button>
+              <button type="button" class="op-tab" data-op="DIV">Pembagian (÷)</button>
+              <button type="button" class="op-tab" data-op="MIX">Campuran</button>
+            </div>
+            <div class="demo-pill demo-stars" id="demoScore">★ 0 Benar</div>
+          </div>
+
+          <div class="demo-question-box">
+            <span class="chip chip-blue" id="demoOpBadge">Perkalian (×)</span>
+            <div class="demo-equation" id="demoEquation">4 × 6 = ?</div>
+            <button type="button" class="hint-toggle-btn" id="demoHintBtn">💡 Bantuan Visual</button>
+            <div class="visual-hint-panel" id="demoHintPanel" hidden>
+              <p id="demoHintText"></p>
+              <div class="dot-groups" id="demoDotGroups"></div>
+            </div>
+          </div>
+
+          <div class="demo-feedback" id="demoFeedback" role="status" aria-live="polite" hidden></div>
+
+          <div class="demo-choices" id="demoChoices"></div>
+
+          <div class="demo-footer">
+            <button type="button" class="btn btn-primary" id="demoNextBtn" hidden>Soal Berikutnya →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Features -->
+    <section id="features" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Dirancang Khusus untuk Siswa SD</span>
+          <h2>Fitur Utama EQ-Math</h2>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="f-icon f-red">×</div>
+            <h3>4 Mode Petualangan</h3>
+            <p>Latihan Perkalian, Latihan Pembagian, Tantangan Campuran, serta <strong>Misi Harian</strong> berhadiah +30 Bonus XP.</p>
+          </div>
+          <div class="feature-card">
+            <div class="f-icon f-yellow">💡</div>
+            <h3>Bantuan Visual Konseptual</h3>
+            <p>Kelompok titik warna membantu siswa memahami arti perkalian berulang dan pembagian sama rata, bukan sekadar menghafal.</p>
+          </div>
+          <div class="feature-card">
+            <div class="f-icon f-blue">⌨</div>
+            <h3>Pilihan Ganda &amp; Ketik Angka</h3>
+            <p>Ubah mode input kapan saja saat kuis berlangsung, didukung mode <em>Santai</em> maupun <em>Kilat Waktu</em>.</p>
+          </div>
+          <div class="feature-card">
+            <div class="f-icon f-green">☁</div>
+            <h3>Firebase Sync &amp; Mode Tamu</h3>
+            <p>Masuk aman dengan Google Credential Manager + Cloud Firestore, atau langsung bermain offline lewat <strong>Mode Tamu</strong>.</p>
+          </div>
+          <div class="feature-card">
+            <div class="f-icon f-navy">♿</div>
+            <h3>Aksesibilitas WCAG AA/AAA</h3>
+            <p>Kontras tinggi di Light &amp; Dark theme, target sentuh minimal <code>48dp</code>, dan dukungan pengumuman TalkBack berbahasa Indonesia.</p>
+          </div>
+          <div class="feature-card">
+            <div class="f-icon f-blue">📱</div>
+            <h3>Responsif HP &amp; Tablet</h3>
+            <p>Otomatis beralih dari <code>NavigationBar</code> ke <code>NavigationRail</code> pada layar lebar &ge; <code>600dp</code> dan foldable.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gamification Progression -->
+    <section id="gamification" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Motivasi Belajar Berkelanjutan</span>
+          <h2>Target Bintang, Level &amp; Lencana</h2>
+        </div>
+
+        <div class="milestones-strip">
+          <div class="milestone-item">
+            <span class="ms-stars">5★</span>
+            <strong>Bintang Perunggu</strong>
+            <small>Awal petualangan</small>
+          </div>
+          <div class="milestone-item">
+            <span class="ms-stars">15★</span>
+            <strong>Bintang Perak</strong>
+            <small>Konsisten berlatih</small>
+          </div>
+          <div class="milestone-item">
+            <span class="ms-stars">30★</span>
+            <strong>Bintang Emas</strong>
+            <small>Tekun &amp; akurat</small>
+          </div>
+          <div class="milestone-item">
+            <span class="ms-stars">60★</span>
+            <strong>Bintang Berlian</strong>
+            <small>Juara berhitung</small>
+          </div>
+          <div class="milestone-item highlight">
+            <span class="ms-stars">100★</span>
+            <strong>Mahkota Galaksi</strong>
+            <small>Legenda EQ-Math</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture & Quick Start -->
+    <section id="architecture" class="section section-alt">
+      <div class="container arch-grid">
+        <div>
+          <span class="section-tag">Modern Android Engineering</span>
+          <h2>Arsitektur Clean MVVM &amp; CI/CD</h2>
+          <p>
+            Dibangun dengan <strong>Kotlin 2.4</strong>, <strong>Jetpack Compose Material 3</strong>,
+            <code>StateFlow</code>, dan abstraksi <code>MathRepository</code>. Pengujian otomatis berjalan
+            di GitHub Actions menggunakan <strong>JUnit 4</strong>, <strong>Robolectric</strong>, dan <strong>Android Lint</strong>.
+          </p>
+          <ul class="tech-list">
+            <li><strong>UI:</strong> Jetpack Compose BOM, Edge-to-Edge Insets, Custom TTF Fonts</li>
+            <li><strong>Cloud:</strong> Firebase Auth, Cloud Firestore, Credential Manager, Zero-Trust <code>firestore.rules</code></li>
+            <li><strong>CI/CD:</strong> Android CI, Automated Tag Releases, GitHub Pages, Dependabot</li>
+          </ul>
+        </div>
+        <div class="code-card">
+          <div class="code-header">
+            <span class="code-dot r"></span>
+            <span class="code-dot y"></span>
+            <span class="code-dot g"></span>
+            <span class="code-title">Quick Start — Local Build &amp; Test</span>
+          </div>
+<pre><code># 1. Decode debug signing keystore
+base64 --decode debug.keystore.base64 > debug.keystore
+
+# 2. Run JUnit &amp; Robolectric test suite
+gradle :app:testDebugUnitTest
+
+# 3. Run Android Lint &amp; build Debug APK
+gradle :app:lintDebug :app:assembleDebug</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Lightbox Modal for Showcase GIFs -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightboxTitle" hidden>
+    <div class="lightbox-backdrop"></div>
+    <div class="lightbox-content">
+      <div class="lightbox-bar">
+        <strong id="lightboxTitle">Showcase</strong>
+        <button id="lightboxClose" class="icon-btn" type="button" aria-label="Tutup pratinjau">✕</button>
+      </div>
+      <img id="lightboxImg" src="" alt="" />
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="logo-plate small">
+          <img src="assets/logo.png" alt="EQ-Math" height="22" />
+        </span>
+        <p>Belajar Jadi Mudah! — Open-source Android math quiz app under the MIT License.</p>
+      </div>
+      <div class="footer-links">
+        <a id="footerRepo" href="https://github.com/" target="_blank" rel="noopener noreferrer">Source Code</a>
+        <a id="footerReleases" href="https://github.com/" target="_blank" rel="noopener noreferrer">Releases (APK)</a>
+        <a id="footerIssues" href="https://github.com/" target="_blank" rel="noopener noreferrer">Issues</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
