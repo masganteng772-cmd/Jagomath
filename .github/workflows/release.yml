@@ -1,28 +1,119 @@
-name: Release Android APK
+name: Tag & Release APK
 
 on:
   push:
+    branches: [main]
     tags:
       - "v*.*.*"
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. v1.0.0)"
-        required: true
-        default: "v1.0.0"
+        description: "Release tag (leave empty to auto-read versionName from app/build.gradle.kts)"
+        required: false
+        default: ""
+      prerelease:
+        description: "Mark as pre-release"
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  release:
-    name: Build & Publish Release
+  resolve-tag:
+    name: Resolve Release Version & Tag
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+      release_tag: ${{ steps.check.outputs.release_tag }}
+      version_name: ${{ steps.check.outputs.version_name }}
+      needs_tag_creation: ${{ steps.check.outputs.needs_tag_creation }}
+
+    steps:
+      - name: Checkout repository (with tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine release tag & check if already released
+        id: check
+        shell: bash
+        run: |
+          git fetch --tags --force
+
+          VERSION_NAME="$(grep -E 'versionName\s*=' app/build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')"
+          if [ -z "${VERSION_NAME}" ]; then
+            VERSION_NAME="1.0.0"
+          fi
+          echo "version_name=${VERSION_NAME}" >> "$GITHUB_OUTPUT"
+
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            INPUT_TAG="${{ inputs.tag }}"
+            if [ -n "${INPUT_TAG}" ]; then
+              TAG="${INPUT_TAG}"
+            else
+              TAG="v${VERSION_NAME}"
+            fi
+            [[ "${TAG}" != v* ]] && TAG="v${TAG}"
+            if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
+              echo "needs_tag_creation=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "needs_tag_creation=true" >> "$GITHUB_OUTPUT"
+            fi
+            echo "release_tag=${TAG}" >> "$GITHUB_OUTPUT"
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "Manual release requested for ${TAG}"
+
+          elif [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            TAG="${GITHUB_REF_NAME}"
+            echo "release_tag=${TAG}" >> "$GITHUB_OUTPUT"
+            echo "needs_tag_creation=false" >> "$GITHUB_OUTPUT"
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "Tag push detected: ${TAG}"
+
+          else
+            # Push to main: auto-tag & release whenever versionName has no tag yet
+            TAG="v${VERSION_NAME}"
+            echo "release_tag=${TAG}" >> "$GITHUB_OUTPUT"
+            if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
+              echo "Tag ${TAG} already exists. Bump versionName in app/build.gradle.kts to trigger a new automatic release."
+              echo "needs_tag_creation=false" >> "$GITHUB_OUTPUT"
+              echo "should_release=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "New untagged version detected (${TAG}). Proceeding with auto-tagging and APK release!"
+              echo "needs_tag_creation=true" >> "$GITHUB_OUTPUT"
+              echo "should_release=true" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+  build-and-release:
+    name: Build APK & Publish GitHub Release
+    needs: resolve-tag
+    if: needs.resolve-tag.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create & push annotated Git tag
+        if: needs.resolve-tag.outputs.needs_tag_creation == 'true'
+        shell: bash
+        run: |
+          TAG="${{ needs.resolve-tag.outputs.release_tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${TAG}" -m "Release ${TAG} — EQ-Math Belajar Jadi Mudah!"
+          git push origin "${TAG}"
+          echo "Created and pushed annotated tag ${TAG}"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -47,23 +138,25 @@ jobs:
               -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
               -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           fi
+
           if [ -n "${KEYSTORE_BASE64}" ]; then
             echo "${KEYSTORE_BASE64}" | base64 --decode > my-upload-key.jks
             echo "HAS_RELEASE_KEYSTORE=true" >> "$GITHUB_ENV"
           else
             echo "HAS_RELEASE_KEYSTORE=false" >> "$GITHUB_ENV"
           fi
+
           if [ ! -f .env ] && [ -f .env.example ]; then
             cp .env.example .env
           fi
 
-      - name: Verify unit tests pass before release
+      - name: Run unit & Robolectric tests
         run: gradle :app:testDebugUnitTest --stacktrace
 
       - name: Build Debug APK
         run: gradle :app:assembleDebug --stacktrace
 
-      - name: Build Signed Release APK & AAB (when keystore secret is configured)
+      - name: Build Signed Release APK & AAB (when release keystore secrets exist)
         if: env.HAS_RELEASE_KEYSTORE == 'true'
         env:
           KEYSTORE_PATH: ${{ github.workspace }}/my-upload-key.jks
@@ -72,30 +165,69 @@ jobs:
         run: |
           gradle :app:assembleRelease :app:bundleRelease --stacktrace
 
-      - name: Collect release artifacts & SHA-256 checksums
+      - name: Package APK artifacts, SHA-256 checksums & release notes
         shell: bash
         run: |
+          TAG="${{ needs.resolve-tag.outputs.release_tag }}"
+          VER="${TAG#v}"
           mkdir -p release-dist
-          TAG_NAME="${GITHUB_REF_NAME}"
-          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
-            TAG_NAME="${{ inputs.tag }}"
-          fi
-          echo "RELEASE_TAG=${TAG_NAME}" >> "$GITHUB_ENV"
 
-          cp app/build/outputs/apk/debug/app-debug.apk "release-dist/EQ-Math-${TAG_NAME}-debug.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "release-dist/EQ-Math-${TAG}-debug.apk"
+
+          PRIMARY_APK="EQ-Math-${TAG}-debug.apk"
           if [ -f app/build/outputs/apk/release/app-release.apk ]; then
-            cp app/build/outputs/apk/release/app-release.apk "release-dist/EQ-Math-${TAG_NAME}-release.apk"
+            cp app/build/outputs/apk/release/app-release.apk "release-dist/EQ-Math-${TAG}-release.apk"
+            PRIMARY_APK="EQ-Math-${TAG}-release.apk"
           fi
           if [ -f app/build/outputs/bundle/release/app-release.aab ]; then
-            cp app/build/outputs/bundle/release/app-release.aab "release-dist/EQ-Math-${TAG_NAME}-release.aab"
+            cp app/build/outputs/bundle/release/app-release.aab "release-dist/EQ-Math-${TAG}-release.aab"
           fi
+
           (cd release-dist && sha256sum * > SHA256SUMS.txt)
+
+          # Build rich release notes from CHANGELOG.md + checksums
+          {
+            echo "## EQ-Math ${TAG} — Belajar Jadi Mudah!"
+            echo ""
+            echo "### Download & Install (Android 7.0+ / API 24+)"
+            echo "1. Download **\`${PRIMARY_APK}\`** from the **Assets** section below."
+            echo "2. Open the APK on your Android device and allow installation from your browser/file manager if prompted."
+            echo "3. Play immediately in **Mode Tamu** or sign in with **Google** for cloud sync."
+            echo ""
+            if [ -f CHANGELOG.md ]; then
+              SECTION="$(awk -v ver="${VER}" '
+                $0 ~ "^## \\[" ver "\\]" { flag=1; next }
+                /^## \[/ && flag { exit }
+                flag { print }
+              ' CHANGELOG.md)"
+              if [ -n "${SECTION}" ]; then
+                echo "### What's Included"
+                echo "${SECTION}"
+                echo ""
+              fi
+            fi
+            echo "### SHA-256 Checksums"
+            echo '```text'
+            cat release-dist/SHA256SUMS.txt
+            echo '```'
+          } > release-notes.md
+
           ls -lh release-dist
 
-      - name: Publish GitHub Release
+      - name: Upload APK build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eq-math-release-${{ needs.resolve-tag.outputs.release_tag }}
+          path: release-dist/*
+          retention-days: 30
+
+      - name: Publish GitHub Release with APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.RELEASE_TAG }}
-          name: EQ-Math ${{ env.RELEASE_TAG }}
+          tag_name: ${{ needs.resolve-tag.outputs.release_tag }}
+          name: "EQ-Math ${{ needs.resolve-tag.outputs.release_tag }}"
+          body_path: release-notes.md
+          prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease == true }}
           generate_release_notes: true
+          make_latest: true
           files: release-dist/*

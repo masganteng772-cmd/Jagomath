@@ -207,19 +207,22 @@ This repository ships with four automated GitHub Actions workflows:
 | Workflow | Trigger | What It Does |
 | :--- | :--- | :--- |
 | **`Android CI`** (`.github/workflows/android-ci.yml`) | Push / PR to `main` | Decodes debug keystore, runs JUnit & Robolectric tests, runs Android Lint, builds Debug APK, validates Firebase JSON/rules, and uploads artifacts. |
-| **`Release Android APK`** (`.github/workflows/release.yml`) | Tag `v*.*.*` or manual | Runs unit tests, builds Debug APK (plus signed Release APK/AAB when `KEYSTORE_BASE64`, `STORE_PASSWORD`, and `KEY_PASSWORD` secrets are set), generates `SHA256SUMS.txt`, and publishes a GitHub Release. |
+| **`Tag & Release APK`** (`.github/workflows/release.yml`) | Push to `main` (new `versionName`), tag `v*.*.*`, or manual | Automatically creates an annotated SemVer tag (`v1.0.0`) from `app/build.gradle.kts`, runs tests, builds Debug APK (plus signed Release APK/AAB when `KEYSTORE_BASE64`, `STORE_PASSWORD`, and `KEY_PASSWORD` secrets are set), generates `SHA256SUMS.txt` + changelog release notes, and publishes a GitHub Release. |
 | **`Deploy GitHub Pages`** (`.github/workflows/pages.yml`) | Push to `docs/**` | Publishes the `docs/` showcase website (with live interactive mini-quiz & 2×2 GIF gallery) to GitHub Pages. |
 | **`Sync Repository Metadata`** (`.github/workflows/repo-metadata.yml`) | Push to `.github/repo-metadata.json` or manual | Syncs GitHub About description, homepage URL, and 20 topics/tags. |
 
-### Apply GitHub Description, Tags & Release Tag
+### Automated Tagging & APK Releases
 
-After pushing this repository to GitHub, run the setup helper once with the [GitHub CLI](https://cli.github.com/):
-
-```bash
-chmod +x scripts/setup-github-repo.sh
-./scripts/setup-github-repo.sh
-git push origin v1.0.0
-```
+- **Automatic on push to `main`**: Whenever `versionName` in `app/build.gradle.kts` (currently `1.0.0`) does not have a matching Git tag yet, the **Tag & Release APK** workflow automatically creates tag `v1.0.0`, builds the APK, generates `SHA256SUMS.txt`, and publishes a GitHub Release.
+- **Bump & release a new version locally**:
+  ```bash
+  ./scripts/create-release.sh 1.1.0          # Bumps versionCode/versionName, tags v1.1.0, pushes to CI
+  ./scripts/create-release.sh 1.1.0 --local  # Or builds APK locally & publishes via gh release create
+  ```
+- **Sync GitHub Description, Topics & Pages** (one-time via [GitHub CLI](https://cli.github.com/)):
+  ```bash
+  ./scripts/setup-github-repo.sh
+  ```
 
 > **Canonical Description:** `EQ-Math — Belajar Jadi Mudah! Gamified Android multiplication & division quiz app for Indonesian elementary students (SD), built with Kotlin, Jetpack Compose, Material 3, and Firebase.`
 >

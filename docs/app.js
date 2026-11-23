@@ -11,6 +11,7 @@
       if (el) el.href = url;
     };
     setHref("repoLinkTop", repoUrl);
+    setHref("releaseLinkHero", `${repoUrl}/releases/latest`);
     setHref("footerRepo", repoUrl);
     setHref("footerReleases", `${repoUrl}/releases`);
     setHref("footerIssues", `${repoUrl}/issues`);
