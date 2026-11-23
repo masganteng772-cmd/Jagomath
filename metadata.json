@@ -1,0 +1,6 @@
+{
+  "name": "EQ-Math",
+  "description": "EQ-Math - Belajar Jadi Mudah! Aplikasi permainan kuis perkalian dan pembagian interaktif dalam Bahasa Indonesia untuk anak SD dengan sistem bintang, milestone, dan lencana.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

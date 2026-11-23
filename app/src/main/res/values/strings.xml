@@ -1,0 +1,100 @@
+<resources>
+    <string name="app_name">EQ-Math</string>
+
+    <!-- Auth Screen -->
+    <string name="auth_welcome_title">Belajar Jadi Mudah!</string>
+    <string name="auth_welcome_subtitle">Latihan perkalian dan pembagian seru untuk anak SD bersama EQ-Math. Kumpulkan bintang, milestone, dan lencana prestasimu!</string>
+    <string name="auth_sign_in_google">Masuk dengan Google</string>
+    <string name="auth_guest_mode">Coba Tanpa Masuk (Mode Tamu)</string>
+    <string name="auth_cloud_note">Progres, bintang, dan lencana tersimpan aman di akun Google-mu.</string>
+    <string name="progress_exit_guest">Keluar Mode Tamu / Masuk Google</string>
+    <string name="auth_mascot_desc">Logo resmi EQ-Math dengan empat warna kuadran otak</string>
+    <string name="auth_error_missing_client">Konfigurasi Google Sign-In belum tersedia.</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Beranda</string>
+    <string name="nav_practice">Latihan</string>
+    <string name="nav_achievements">Lencana</string>
+    <string name="nav_progress">Progres</string>
+
+    <!-- Home -->
+    <string name="home_greeting">Halo, %1$s!</string>
+    <string name="home_subtitle">Belajar matematika jadi mudah dan seru hari ini!</string>
+    <string name="home_daily_title">Misi Harian</string>
+    <string name="home_daily_desc">10 soal campuran perkalian &amp; pembagian untuk bonus XP dan rekor harian!</string>
+    <string name="home_daily_cta">Mulai Misi</string>
+    <string name="home_modes_title">Pilih Petualangan Belajar</string>
+    <string name="home_mul_title">Latihan Perkalian (×)</string>
+    <string name="home_mul_desc">Kuasai tabel 1 sampai 12 dengan bantuan visual seru</string>
+    <string name="home_div_title">Latihan Pembagian (÷)</string>
+    <string name="home_div_desc">Belajar membagi sama rata tanpa bingung</string>
+    <string name="home_mixed_title">Tantangan Campuran</string>
+    <string name="home_mixed_desc">Gabungan cepat perkalian dan pembagian</string>
+    <string name="home_cheat_sheet_cta">Lihat Tabel Perkalian &amp; Pembagian</string>
+    <string name="reward_dashboard_title">Papan Hadiah &amp; Bintang</string>
+    <string name="reward_view_all_badges">Lihat Semua</string>
+    <string name="reward_empty_badges_tip">Selesaikan kuis pertamamu untuk membuka lencana dan meraih Bintang Perunggu!</string>
+    <string name="result_new_star_milestone">Target Bintang Tercapai!</string>
+
+    <!-- Practice Hub -->
+    <string name="practice_title">Arena Latihan</string>
+    <string name="practice_select_op">Pilih Jenis Operasi</string>
+    <string name="practice_select_mode">Pilih Mode Permainan</string>
+    <string name="practice_select_count">Jumlah Soal</string>
+    <string name="practice_select_table">Pilih Tabel Angka</string>
+    <string name="practice_all_tables">Semua (Acak)</string>
+    <string name="practice_start_cta">Mulai Kuis Sekarang!</string>
+    <string name="practice_mode_relaxed">Santai</string>
+    <string name="practice_mode_relaxed_desc">Ada bantuan gambar</string>
+    <string name="practice_mode_timed">Kilat Waktu</string>
+    <string name="practice_mode_timed_desc">Kejar bonus XP!</string>
+    <string name="practice_input_choice">Pilihan Ganda</string>
+    <string name="practice_input_keypad">Ketik Angka</string>
+
+    <!-- Quiz -->
+    <string name="quiz_question_counter">Soal %1$d / %2$d</string>
+    <string name="quiz_hint_button">Bantuan Visual</string>
+    <string name="quiz_exit_title">Keluar dari Kuis?</string>
+    <string name="quiz_exit_message">Jawaban pada sesi ini belum akan disimpan jika kamu keluar sekarang.</string>
+    <string name="quiz_exit_confirm">Ya, Keluar</string>
+    <string name="quiz_exit_cancel">Lanjut Main</string>
+    <string name="quiz_next_button">Soal Berikutnya</string>
+    <string name="quiz_finish_button">Lihat Hasil</string>
+    <string name="quiz_submit_answer">Jawab!</string>
+    <string name="quiz_clear">Hapus</string>
+
+    <!-- Result -->
+    <string name="result_title_great">Luar Biasa!</string>
+    <string name="result_title_good">Kerja Bagus!</string>
+    <string name="result_title_keep_going">Terus Semangat!</string>
+    <string name="result_trophy_desc">Piala emas perayaan hasil kuis</string>
+    <string name="result_new_badges">Lencana Baru Terbuka!</string>
+    <string name="result_play_again">Main Lagi</string>
+    <string name="result_back_home">Kembali ke Beranda</string>
+
+    <!-- Achievements -->
+    <string name="achievements_title">Koleksi Lencana</string>
+    <string name="achievements_filter_all">Semua</string>
+    <string name="achievements_filter_unlocked">Terbuka</string>
+    <string name="achievements_filter_locked">Terkunci</string>
+
+    <!-- Progress -->
+    <string name="progress_title">Progres Belajarku</string>
+    <string name="progress_mastery_title">Peta Penguasaan Tabel (1–12)</string>
+    <string name="progress_history_title">Riwayat Kuis Terbaru</string>
+    <string name="progress_empty_history">Belum ada riwayat kuis. Yuk mulai latihan pertamamu!</string>
+    <string name="progress_edit_name">Ubah Nama</string>
+    <string name="progress_sign_out">Keluar Akun</string>
+    <string name="progress_save">Simpan</string>
+    <string name="progress_cancel">Batal</string>
+    <string name="progress_name_label">Nama Panggilan Siswa</string>
+
+    <!-- Cheat Sheet -->
+    <string name="table_guide_title">Tabel Pintar SD</string>
+    <string name="table_guide_practice_this">Latih Tabel Ini</string>
+
+    <!-- Errors & Loading -->
+    <string name="loading_data">Menyiapkan ruang belajarmu...</string>
+    <string name="error_generic">Terjadi kendala saat memuat data. Coba lagi ya!</string>
+    <string name="retry_button">Coba Lagi</string>
+</resources>

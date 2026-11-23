@@ -1,0 +1,267 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Gamified math learning profile and cumulative stats for an elementary school student.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated Firebase UID matching the document ID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Student display name shown in greetings (1-40 chars)."
+        },
+        "totalXp": {
+          "type": "integer",
+          "description": "Cumulative experience points earned."
+        },
+        "totalStars": {
+          "type": "integer",
+          "description": "Cumulative stars earned across quizzes."
+        },
+        "totalQuizzes": {
+          "type": "integer",
+          "description": "Total completed quiz sessions."
+        },
+        "totalQuestionsAnswered": {
+          "type": "integer",
+          "description": "Total math questions answered across all sessions."
+        },
+        "totalCorrectAnswers": {
+          "type": "integer",
+          "description": "Total math questions answered correctly."
+        },
+        "multiplicationCorrect": {
+          "type": "integer",
+          "description": "Total multiplication questions answered correctly."
+        },
+        "divisionCorrect": {
+          "type": "integer",
+          "description": "Total division questions answered correctly."
+        },
+        "perfectQuizzes": {
+          "type": "integer",
+          "description": "Total quizzes completed with 100% accuracy."
+        },
+        "timedHighAccuracyQuizzes": {
+          "type": "integer",
+          "description": "Total timed quizzes completed with >=80% accuracy."
+        },
+        "bestCombo": {
+          "type": "integer",
+          "description": "Highest consecutive correct answer streak."
+        },
+        "currentStreakDays": {
+          "type": "integer",
+          "description": "Current consecutive daily practice streak."
+        },
+        "bestStreakDays": {
+          "type": "integer",
+          "description": "Longest consecutive daily practice streak."
+        },
+        "lastPracticeDate": {
+          "type": "string",
+          "description": "ISO local date (YYYY-MM-DD) of last completed quiz, or empty string."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp (FieldValue.serverTimestamp()) when profile was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp (FieldValue.serverTimestamp()) of latest update."
+        }
+      },
+      "required": [
+        "userId",
+        "displayName",
+        "totalXp",
+        "totalStars",
+        "totalQuizzes",
+        "totalQuestionsAnswered",
+        "totalCorrectAnswers",
+        "multiplicationCorrect",
+        "divisionCorrect",
+        "perfectQuizzes",
+        "timedHighAccuracyQuizzes",
+        "bestCombo",
+        "currentStreakDays",
+        "bestStreakDays",
+        "lastPracticeDate",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "QuizSession": {
+      "title": "QuizSession",
+      "description": "Immutable record of a completed multiplication or division quiz session.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase UID."
+        },
+        "operationType": {
+          "type": "string",
+          "enum": ["MULTIPLICATION", "DIVISION", "MIXED"],
+          "description": "Math operation practiced in the session."
+        },
+        "gameMode": {
+          "type": "string",
+          "enum": ["PRACTICE", "TIMED", "DAILY"],
+          "description": "Quiz mode played."
+        },
+        "tableNumber": {
+          "type": "integer",
+          "description": "Focused multiplication/division table (1-12) or 0 for mixed tables."
+        },
+        "totalQuestions": {
+          "type": "integer",
+          "description": "Number of questions in the session (1-30)."
+        },
+        "correctAnswers": {
+          "type": "integer",
+          "description": "Number of correct answers (0 to totalQuestions)."
+        },
+        "starsEarned": {
+          "type": "integer",
+          "description": "Stars earned in the session (0-3)."
+        },
+        "xpEarned": {
+          "type": "integer",
+          "description": "Experience points earned in the session."
+        },
+        "maxCombo": {
+          "type": "integer",
+          "description": "Highest combo achieved in this session."
+        },
+        "durationSeconds": {
+          "type": "integer",
+          "description": "Time taken in seconds."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp (FieldValue.serverTimestamp()) when session completed."
+        }
+      },
+      "required": [
+        "userId",
+        "operationType",
+        "gameMode",
+        "tableNumber",
+        "totalQuestions",
+        "correctAnswers",
+        "starsEarned",
+        "xpEarned",
+        "maxCombo",
+        "durationSeconds",
+        "createdAt"
+      ]
+    },
+    "TableMastery": {
+      "title": "TableMastery",
+      "description": "Per-table mastery tracking for multiplication (1-12) and division (1-12).",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase UID."
+        },
+        "operationType": {
+          "type": "string",
+          "enum": ["MULTIPLICATION", "DIVISION"],
+          "description": "Operation type for this table."
+        },
+        "tableNumber": {
+          "type": "integer",
+          "description": "Table number from 1 to 12."
+        },
+        "attempts": {
+          "type": "integer",
+          "description": "Total questions attempted for this table."
+        },
+        "correct": {
+          "type": "integer",
+          "description": "Total correct answers for this table."
+        },
+        "stars": {
+          "type": "integer",
+          "description": "Mastery star rating (0-3)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp (FieldValue.serverTimestamp()) when record was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp (FieldValue.serverTimestamp()) when record was last updated."
+        }
+      },
+      "required": [
+        "userId",
+        "operationType",
+        "tableNumber",
+        "attempts",
+        "correct",
+        "stars",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UnlockedAchievement": {
+      "title": "UnlockedAchievement",
+      "description": "Immutable badge unlocked by the student.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase UID."
+        },
+        "badgeId": {
+          "type": "string",
+          "description": "Unique badge identifier matching document ID."
+        },
+        "xpReward": {
+          "type": "integer",
+          "description": "XP bonus granted when badge was unlocked."
+        },
+        "unlockedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp (FieldValue.serverTimestamp()) when badge was unlocked."
+        }
+      },
+      "required": [
+        "userId",
+        "badgeId",
+        "xpReward",
+        "unlockedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Student gamification profile and cumulative math stats."
+    },
+    "/users/{userId}/quizSessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/QuizSession" },
+      "description": "Student completed quiz session history."
+    },
+    "/users/{userId}/tableMastery/{masteryId}": {
+      "schema": { "$ref": "#/entities/TableMastery" },
+      "description": "Per-table mastery stats for multiplication and division 1-12."
+    },
+    "/users/{userId}/achievements/{achievementId}": {
+      "schema": { "$ref": "#/entities/UnlockedAchievement" },
+      "description": "Student unlocked achievement badges."
+    }
+  }
+}

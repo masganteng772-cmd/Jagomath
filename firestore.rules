@@ -1,0 +1,211 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- GLOBAL HARDENED PRIMITIVES ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- VALIDATION BLUEPRINTS ---
+    function isValidUserProfile(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.displayName is string &&
+             data.displayName.size() >= 1 && data.displayName.size() <= 40 &&
+             data.totalXp is int && data.totalXp >= 0 && data.totalXp <= 10000000 &&
+             data.totalStars is int && data.totalStars >= 0 && data.totalStars <= 1000000 &&
+             data.totalQuizzes is int && data.totalQuizzes >= 0 && data.totalQuizzes <= 1000000 &&
+             data.totalQuestionsAnswered is int && data.totalQuestionsAnswered >= 0 && data.totalQuestionsAnswered <= 10000000 &&
+             data.totalCorrectAnswers is int && data.totalCorrectAnswers >= 0 && data.totalCorrectAnswers <= data.totalQuestionsAnswered &&
+             data.multiplicationCorrect is int && data.multiplicationCorrect >= 0 && data.multiplicationCorrect <= 10000000 &&
+             data.divisionCorrect is int && data.divisionCorrect >= 0 && data.divisionCorrect <= 10000000 &&
+             data.perfectQuizzes is int && data.perfectQuizzes >= 0 && data.perfectQuizzes <= 1000000 &&
+             data.timedHighAccuracyQuizzes is int && data.timedHighAccuracyQuizzes >= 0 && data.timedHighAccuracyQuizzes <= 1000000 &&
+             data.bestCombo is int && data.bestCombo >= 0 && data.bestCombo <= 1000 &&
+             data.currentStreakDays is int && data.currentStreakDays >= 0 && data.currentStreakDays <= 10000 &&
+             data.bestStreakDays is int && data.bestStreakDays >= 0 && data.bestStreakDays <= 10000 &&
+             data.lastPracticeDate is string && data.lastPracticeDate.size() <= 12 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidQuizSession(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.operationType is string && data.operationType.size() <= 20 &&
+             data.operationType in ['MULTIPLICATION', 'DIVISION', 'MIXED'] &&
+             data.gameMode is string && data.gameMode.size() <= 20 &&
+             data.gameMode in ['PRACTICE', 'TIMED', 'DAILY'] &&
+             data.tableNumber is int && data.tableNumber >= 0 && data.tableNumber <= 12 &&
+             data.totalQuestions is int && data.totalQuestions >= 1 && data.totalQuestions <= 30 &&
+             data.correctAnswers is int && data.correctAnswers >= 0 && data.correctAnswers <= data.totalQuestions &&
+             data.starsEarned is int && data.starsEarned >= 0 && data.starsEarned <= 3 &&
+             data.xpEarned is int && data.xpEarned >= 0 && data.xpEarned <= 2000 &&
+             data.maxCombo is int && data.maxCombo >= 0 && data.maxCombo <= data.totalQuestions &&
+             data.durationSeconds is int && data.durationSeconds >= 0 && data.durationSeconds <= 3600 &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidTableMastery(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.operationType is string && data.operationType.size() <= 20 &&
+             data.operationType in ['MULTIPLICATION', 'DIVISION'] &&
+             data.tableNumber is int && data.tableNumber >= 1 && data.tableNumber <= 12 &&
+             data.attempts is int && data.attempts >= 0 && data.attempts <= 1000000 &&
+             data.correct is int && data.correct >= 0 && data.correct <= data.attempts &&
+             data.stars is int && data.stars >= 0 && data.stars <= 3 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidAchievement(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.badgeId is string && data.badgeId.size() >= 1 && data.badgeId.size() <= 50 &&
+             data.badgeId.matches('^[a-z0-9_]+$') &&
+             data.xpReward is int && data.xpReward >= 0 && data.xpReward <= 1000 &&
+             data.unlockedAt is timestamp && data.unlockedAt <= request.time;
+    }
+
+    // --- USER PROFILE & NESTED SUBCOLLECTIONS ---
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'displayName', 'totalXp', 'totalStars', 'totalQuizzes',
+                         'totalQuestionsAnswered', 'totalCorrectAnswers', 'multiplicationCorrect',
+                         'divisionCorrect', 'perfectQuizzes', 'timedHighAccuracyQuizzes',
+                         'bestCombo', 'currentStreakDays', 'bestStreakDays', 'lastPracticeDate',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'displayName', 'totalXp', 'totalStars', 'totalQuizzes',
+                         'totalQuestionsAnswered', 'totalCorrectAnswers', 'multiplicationCorrect',
+                         'divisionCorrect', 'perfectQuizzes', 'timedHighAccuracyQuizzes',
+                         'bestCombo', 'currentStreakDays', 'bestStreakDays', 'lastPracticeDate',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidUserProfile(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidUserProfile(incoming()) &&
+                       isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         // Action 1: Update display name
+                         incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'updatedAt']) ||
+                         // Action 2: Record quiz session & achievement progress
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'totalXp', 'totalStars', 'totalQuizzes', 'totalQuestionsAnswered',
+                           'totalCorrectAnswers', 'multiplicationCorrect', 'divisionCorrect',
+                           'perfectQuizzes', 'timedHighAccuracyQuizzes', 'bestCombo',
+                           'currentStreakDays', 'bestStreakDays', 'lastPracticeDate', 'updatedAt'
+                         ])
+                       );
+
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      // Quiz Sessions Subcollection (Immutable history records)
+      match /quizSessions/{sessionId} {
+        allow get: if isOwner(userId) && isValidId(sessionId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(sessionId) &&
+                         incoming().keys().hasAll([
+                           'userId', 'operationType', 'gameMode', 'tableNumber',
+                           'totalQuestions', 'correctAnswers', 'starsEarned', 'xpEarned',
+                           'maxCombo', 'durationSeconds', 'createdAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'userId', 'operationType', 'gameMode', 'tableNumber',
+                           'totalQuestions', 'correctAnswers', 'starsEarned', 'xpEarned',
+                           'maxCombo', 'durationSeconds', 'createdAt'
+                         ]) &&
+                         isValidQuizSession(incoming());
+
+        allow update: if false;
+        allow delete: if isOwner(userId) && isValidId(sessionId);
+      }
+
+      // Per-Table Mastery Subcollection
+      match /tableMastery/{masteryId} {
+        allow get: if isOwner(userId) && isValidId(masteryId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(masteryId) &&
+                         incoming().keys().hasAll([
+                           'userId', 'operationType', 'tableNumber',
+                           'attempts', 'correct', 'stars', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'userId', 'operationType', 'tableNumber',
+                           'attempts', 'correct', 'stars', 'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidTableMastery(incoming());
+
+        allow update: if isSignedIn() &&
+                         isValidTableMastery(incoming()) &&
+                         isOwner(userId) &&
+                         isValidId(masteryId) &&
+                         incoming().userId == existing().userId &&
+                         incoming().operationType == existing().operationType &&
+                         incoming().tableNumber == existing().tableNumber &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'attempts', 'correct', 'stars', 'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(masteryId);
+      }
+
+      // Unlocked Achievements Subcollection (Immutable unlocks)
+      match /achievements/{achievementId} {
+        allow get: if isOwner(userId) && isValidId(achievementId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(achievementId) &&
+                         achievementId == incoming().badgeId &&
+                         incoming().keys().hasAll(['userId', 'badgeId', 'xpReward', 'unlockedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'badgeId', 'xpReward', 'unlockedAt']) &&
+                         isValidAchievement(incoming());
+
+        allow update: if false;
+        allow delete: if isOwner(userId) && isValidId(achievementId);
+      }
+    }
+  }
+}
