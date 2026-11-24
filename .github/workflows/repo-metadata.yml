@@ -2,7 +2,7 @@ name: Sync Repository Metadata
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
     paths:
       - ".github/repo-metadata.json"
   workflow_dispatch:
