@@ -222,7 +222,7 @@ jobs:
           echo "Created and pushed annotated tag ${TAG}"
 
       - name: Publish GitHub Release with APK
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.resolve-tag.outputs.release_tag }}
           name: "EQ-Math ${{ needs.resolve-tag.outputs.release_tag }}"
