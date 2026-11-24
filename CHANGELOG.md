@@ -6,10 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-23
+
 ### Added
 - Automated GitHub Actions CI/CD workflows for unit/Robolectric tests, Lint, Debug/Release APK builds, GitHub Pages deployment, and repository metadata syncing.
 - Interactive GitHub Pages showcase site (`docs/`) with live browser mini-quiz demo and 2×2 animated GIF gallery.
 - Community governance files (`LICENSE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue/PR templates, Dependabot).
+
+### Changed
+- Updated Android Gradle version catalog dependencies (`navigation-compose` 2.10.2, `room` 2.8.5, `camera-camera2` 1.7.0, `kotlinx-coroutines-test` 1.11.0) and GitHub Actions (`checkout@v7`, `setup-java@v6`, `configure-pages@v6`, `deploy-pages@v5`, `action-gh-release@v3`).
+
+### Fixed
+- Guarded `FirebaseAuth` initialization and resolved `default_web_client_id` dynamically so standalone APKs built without `google-services.json` compile cleanly and launch smoothly into `AuthScreen` and offline **Mode Tamu** without crashing.
 
 ## [1.0.0] - 2026-11-23
 
