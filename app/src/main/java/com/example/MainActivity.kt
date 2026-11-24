@@ -72,6 +72,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.auth.firebaseAuthOrNull
 import com.example.auth.signOutUser
 import com.example.data.LocalGuestMathRepository
 import com.example.data.MathProgressRepository
@@ -90,9 +91,7 @@ import com.example.ui.screens.QuizScreen
 import com.example.ui.screens.TableGuideScreen
 import com.example.ui.theme.EqMathTheme
 import com.example.ui.theme.EqTheme
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : ComponentActivity() {
@@ -109,18 +108,23 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun EqMathRoot() {
-    var currentUser by remember { mutableStateOf(Firebase.auth.currentUser) }
+    val firebaseAuth = remember { firebaseAuthOrNull() }
+    var currentUser by remember { mutableStateOf(firebaseAuth?.currentUser) }
     var isGuestMode by remember { mutableStateOf(false) }
 
-    DisposableEffect(Unit) {
-        val listener = FirebaseAuth.AuthStateListener { auth ->
-            currentUser = auth.currentUser
-            if (auth.currentUser != null) {
-                isGuestMode = false
+    DisposableEffect(firebaseAuth) {
+        if (firebaseAuth != null) {
+            val listener = FirebaseAuth.AuthStateListener { auth ->
+                currentUser = auth.currentUser
+                if (auth.currentUser != null) {
+                    isGuestMode = false
+                }
             }
+            firebaseAuth.addAuthStateListener(listener)
+            onDispose { firebaseAuth.removeAuthStateListener(listener) }
+        } else {
+            onDispose { }
         }
-        Firebase.auth.addAuthStateListener(listener)
-        onDispose { Firebase.auth.removeAuthStateListener(listener) }
     }
 
     val user = currentUser
@@ -157,7 +161,7 @@ private fun EqMathRoot() {
             AuthScreen(
                 onAuthSuccess = {
                     isGuestMode = false
-                    currentUser = Firebase.auth.currentUser
+                    currentUser = firebaseAuth?.currentUser ?: firebaseAuthOrNull()?.currentUser
                 },
                 onContinueAsGuest = {
                     isGuestMode = true
